@@ -14,15 +14,22 @@
       padding: 0;
     }
   </style>
+
+  <link rel="stylesheet" href="./css/PacMan.css">
 </head>
 
 <body>
+  <div>
+    Icons made by
+    <a href="https://www.freepik.com/" title="Freepik">Freepik</a>
+  </div>
+
   <div class="container-1"></div>
 
   <script type="module">
-    import PacMan from './PacMan.js'
+    import PacMan from './js/PacMan.js'
 
-    const game = new PacMan('.container-1', 320)  
+    const game = new PacMan('.container-1', 320)
 
     window.game = game
   </script>

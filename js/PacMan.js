@@ -14,7 +14,7 @@ export default class PacMan {
     this.gameBoard = null
 
     this.boardDimension = boardDimension + 'px'
-    
+
     this.timeOfTick = 300
 
     // game variables that DONT depends of level
@@ -22,7 +22,7 @@ export default class PacMan {
     this.gameBoardArray = []
     this.direction = 'up'
     this.score = 0
-    
+
     // game variables that depends of level
     this.pacManPosition = JSON.parse(JSON.stringify(pacManPosition))
     this.ghostPositions = JSON.parse(JSON.stringify(ghostPositions))
@@ -113,18 +113,23 @@ export default class PacMan {
 
     switch (cell) {
       case WALL:
+        cellElement.className = 'wall'
         cellElement.style.backgroundColor = 'black'
         break
       case EMPTY:
+        cellElement.className = 'empty'
         cellElement.style.backgroundColor = 'grey'
         break
       case FOOD:
+        cellElement.className = 'food'
         cellElement.style.backgroundColor = 'green'
         break
       case PACMAN:
+        cellElement.className = 'pacman ' + this.direction
         cellElement.style.backgroundColor = 'yellow'
         break
       case GHOST:
+        cellElement.className = 'ghost'
         cellElement.style.backgroundColor = 'violet'
         break
     }

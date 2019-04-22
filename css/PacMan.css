@@ -1,0 +1,37 @@
+.wall, .empty, .ghost, .food, .pacman {
+  background-color: white !important;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.wall {
+  background-image: url('../img/wall.svg');
+  background-size: 101%;
+}
+
+.ghost {
+  background-image: url('../img/ghost.svg');
+}
+
+.food {
+  background-size: contain;
+  background-image: url('../img/food.svg');
+  background-size: 40%;
+}
+
+.pacman {
+  background-image: url('../img/pacman.svg');
+}
+.pacman.up {
+  transform: rotate(-90deg)
+}
+.pacman.right {
+  transform: rotate(0deg)
+}
+.pacman.down {
+  transform: rotate(90deg)
+}
+.pacman.left {
+  transform: rotate(180deg)
+}
