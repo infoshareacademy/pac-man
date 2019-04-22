@@ -1,4 +1,4 @@
-import { board } from './PackMan.board.js'
+import { board, ghostPositions, packManPosition } from './PackMan.board.js'
 import { getRandomInt } from './PackMan.utils.js'
 
 const WALL = 0
@@ -14,22 +14,20 @@ export default class PackMan {
     this.gameBoard = null
 
     this.boardDimension = boardDimension + 'px'
-    this.cellDimension = (100 / board.length) + '%'
-
+    
     this.timeOfTick = 300
 
     // game variables that DONT depends of level
     this.gameIntervalId = null
+    this.gameBoardArray = []
     this.direction = 'up'
     this.score = 0
-
+    
     // game variables that depends of level
-    this.packManPosition = { x: 1, y: 1 }
-    this.ghostPositions = [
-      { x: 1, y: 2 },
-      { x: 3, y: 3 },
-    ]
-    this.gameBoardArray = []
+    this.packManPosition = JSON.parse(JSON.stringify(packManPosition))
+    this.ghostPositions = JSON.parse(JSON.stringify(ghostPositions))
+    this.initialGameBoardArray = JSON.parse(JSON.stringify(board))
+    this.cellDimension = (100 / this.initialGameBoardArray.length) + '%'
 
     // bind interactions with moves
     this.checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
@@ -59,7 +57,7 @@ export default class PackMan {
   }
 
   composeBoard() {
-    this.gameBoardArray = JSON.parse(JSON.stringify(board))
+    this.gameBoardArray = JSON.parse(JSON.stringify(this.initialGameBoardArray))
 
     this.gameBoardArray[this.packManPosition.y][this.packManPosition.x] = PACKMAN
 
@@ -89,11 +87,23 @@ export default class PackMan {
 
     this.composeBoard()
 
+    this.renderScore()
+
     this.gameBoardArray.forEach(row => {
       row.forEach(cell => {
         this.renderSingleCell(cell)
       })
     })
+  }
+
+  renderScore() {
+    const scoreDiv = document.createElement('div')
+
+    scoreDiv.style.width = '100%'
+
+    scoreDiv.innerText = this.score
+
+    this.gameBoard.appendChild(scoreDiv)
   }
 
   renderSingleCell(cell) {
@@ -222,7 +232,7 @@ export default class PackMan {
   }
 
   eatFood(newPosition) {
-    board[newPosition.y][newPosition.x] = EMPTY
+    this.initialGameBoardArray[newPosition.y][newPosition.x] = EMPTY
   }
 
   scoreUp() {

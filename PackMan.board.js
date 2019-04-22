@@ -16,3 +16,10 @@ export const board = (
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]
 )
+
+export const packManPosition = { x: 1, y: 1 }
+
+export const ghostPositions = [
+  { x: 1, y: 2 },
+  { x: 3, y: 3 },
+]
