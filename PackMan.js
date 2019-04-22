@@ -9,42 +9,45 @@ const GHOST = 4
 
 export default class PackMan {
   constructor(selector, boardDimension) {
+    // HTML containers and game settings
     this.container = selector ? document.querySelector(selector) : document.body
+    this.gameBoard = null
 
     this.boardDimension = boardDimension + 'px'
     this.cellDimension = (100 / board.length) + '%'
 
-    this.timeOfTick = 200
+    this.timeOfTick = 300
 
+    // game variables that DONT depends of level
+    this.gameIntervalId = null
+    this.direction = 'up'
+    this.score = 0
+
+    // game variables that depends of level
     this.packManPosition = { x: 1, y: 1 }
     this.ghostPositions = [
       { x: 1, y: 2 },
       { x: 3, y: 3 },
     ]
-
     this.gameBoardArray = []
-    this.gameBoard = null
-    this.gameIntervalId = null
-    this.direction = 'up'
-    this.score = 0
 
+    // bind interactions with moves
     this.checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
-      [GHOST],
-      [EMPTY],
-      [FOOD],
-      [WALL]
+      [GHOST], // stepping on ghost ends game
+      [EMPTY], // stepping on empty moves packman
+      [FOOD], // stepping on food moves packman and score
+      [WALL] // cant go on walls
     )
-
     this.checkWhatMoveDoForGhost = this.checkWhatMoveDo(
-      [PACKMAN],
-      [EMPTY, FOOD],
-      [],
-      [WALL, GHOST]
+      [PACKMAN], // stepping on packman ends game
+      [EMPTY, FOOD], // stepping on empty or food moves ghost
+      [], // ghost cant score
+      [WALL, GHOST] // ghosts cant go on other ghosts and walls
     )
 
+    // functions to start game
     this.init()
   }
-
 
   init() {
     this.makeGameBoard()
@@ -172,7 +175,7 @@ export default class PackMan {
     this.render()
   }
 
-  tryToMoveGhosts(){
+  tryToMoveGhosts() {
     this.ghostPositions.forEach(
       (ghost, indexOfGhost) => this.tryToMoveGhost(indexOfGhost)
     )
