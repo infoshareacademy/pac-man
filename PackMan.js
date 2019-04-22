@@ -1,5 +1,11 @@
 import { board } from './PackMan.board.js'
 
+const WALL = 0
+const EMPTY = 1
+const FOOD = 2
+const PACKMAN = 3
+const GHOST = 4
+
 export default class PackMan {
   constructor(selector, boardDimension) {
     this.container = selector ? document.querySelector(selector) : document.body
@@ -10,6 +16,10 @@ export default class PackMan {
     this.timeOfTick = 200
 
     this.packManPosition = { x: 1, y: 1 }
+    this.ghostPositions = [
+      { x: 2, y: 2 },
+      { x: 3, y: 3 },
+    ]
 
     this.gameBoardArray = board
     this.gameBoard = null
@@ -28,7 +38,19 @@ export default class PackMan {
     // this.setGameInterval()
   }
 
-  placePackMan() { }
+  composeBoard() {
+    const boardArrayToRender = JSON.parse(JSON.stringify(this.gameBoardArray))
+
+    boardArrayToRender[this.packManPosition.y][this.packManPosition.x] = PACKMAN
+
+    this.ghostPositions.forEach(
+      ghostPosition => {
+        boardArrayToRender[ghostPosition.y][ghostPosition.x] = GHOST
+      }
+    )
+
+    return boardArrayToRender
+  }
 
   makeGameBoard() {
     const boardElement = document.createElement('div')
@@ -47,9 +69,7 @@ export default class PackMan {
   render() {
     this.gameBoard.innerHTML = ''
 
-    this.placePackMan()
-
-    this.gameBoardArray.forEach(row => {
+    this.composeBoard().forEach(row => {
       row.forEach(cell => {
         this.renderSingleCell(cell)
       })
@@ -62,14 +82,20 @@ export default class PackMan {
     cellElement.style.height = this.cellDimension
 
     switch (cell) {
-      case 0:
+      case WALL:
         cellElement.style.backgroundColor = 'black'
         break
-      case 1:
+      case EMPTY:
         cellElement.style.backgroundColor = 'grey'
         break
-      case 'X':
+      case FOOD:
         cellElement.style.backgroundColor = 'green'
+        break
+      case PACKMAN:
+        cellElement.style.backgroundColor = 'yellow'
+        break
+      case GHOST:
+        cellElement.style.backgroundColor = 'violet'
         break
     }
 
