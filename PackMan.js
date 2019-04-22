@@ -1,4 +1,5 @@
 import { board } from './PackMan.board.js'
+import { getRandomInt } from './PackMan.utils.js'
 
 const WALL = 0
 const EMPTY = 1
@@ -27,8 +28,23 @@ export default class PackMan {
     this.direction = 'up'
     this.score = 0
 
+    this.checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
+      [GHOST],
+      [EMPTY],
+      [FOOD],
+      [WALL]
+    )
+
+    this.checkWhatMoveDoForGhost = this.checkWhatMoveDo(
+      [PACKMAN],
+      [EMPTY, FOOD],
+      [],
+      [WALL, GHOST]
+    )
+
     this.init()
   }
+
 
   init() {
     this.makeGameBoard()
@@ -129,13 +145,6 @@ export default class PackMan {
     }
   }
 
-  checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
-    [GHOST],
-    [EMPTY],
-    [FOOD],
-    [WALL]
-  )
-
   tryToMovePackMan(y, x) {
     const newPosition = {
       x: this.packManPosition.x + x,
@@ -163,6 +172,38 @@ export default class PackMan {
     this.render()
   }
 
+  tryToMoveGhosts(){
+    this.ghostPositions.forEach(
+      (ghost, indexOfGhost) => this.tryToMoveGhost(indexOfGhost)
+    )
+  }
+
+  tryToMoveGhost(indexOfGhost) {
+    const currentGhostPosition = this.ghostPositions[indexOfGhost]
+
+    const newPosition = {
+      x: currentGhostPosition.x + getRandomInt(-1, 1),
+      y: currentGhostPosition.y + getRandomInt(-1, 1),
+    }
+
+    const whatToDo = this.checkWhatMoveDoForGhost(newPosition)
+
+    switch (whatToDo) {
+      case 'ENDGAME':
+        this.endGame()
+        break
+      case 'MOVE':
+        this.moveGhost(indexOfGhost, newPosition)
+        break
+      case 'MOVEANDSCORE':
+        break
+      case 'DONTMOVE':
+        break
+    }
+
+    this.render()
+  }
+
   endGame() {
     clearInterval(this.gameIntervalId)
     alert('GAME OVER! \n YOUT SCORE - ' + this.score + ' !!!')
@@ -173,7 +214,11 @@ export default class PackMan {
     this.packManPosition = newPosition
   }
 
-  eatFood(newPosition){
+  moveGhost(indexOfGhost, newPosition) {
+    this.ghostPositions[indexOfGhost] = newPosition
+  }
+
+  eatFood(newPosition) {
     board[newPosition.y][newPosition.x] = EMPTY
   }
 
@@ -203,6 +248,8 @@ export default class PackMan {
         this.tryToMovePackMan(0, 1)
         break
     }
+
+    this.tryToMoveGhosts()
   }
 
   startListeningArrowKeys() {
