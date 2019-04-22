@@ -153,6 +153,7 @@ export default class PackMan {
         break
       case 'MOVEANDSCORE':
         this.movePackMan(newPosition)
+        this.eatFood(newPosition)
         this.scoreUp()
         break
       case 'DONTMOVE':
@@ -170,6 +171,10 @@ export default class PackMan {
 
   movePackMan(newPosition) {
     this.packManPosition = newPosition
+  }
+
+  eatFood(newPosition){
+    board[newPosition.y][newPosition.x] = EMPTY
   }
 
   scoreUp() {
