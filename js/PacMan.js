@@ -21,6 +21,7 @@ export default class PacMan {
     this.gameIntervalId = null
     this.gameBoardArray = []
     this.direction = 'up'
+    this.isGameEnded = false
     this.score = 0
 
     // game variables that depends of level
@@ -55,19 +56,7 @@ export default class PacMan {
 
     this.setGameInterval()
   }
-
-  composeBoard() {
-    this.gameBoardArray = JSON.parse(JSON.stringify(this.initialGameBoardArray))
-
-    this.gameBoardArray[this.pacManPosition.y][this.pacManPosition.x] = PACMAN
-
-    this.ghostPositions.forEach(
-      ghostPosition => {
-        this.gameBoardArray[ghostPosition.y][ghostPosition.x] = GHOST
-      }
-    )
-  }
-
+  
   makeGameBoard() {
     const boardElement = document.createElement('div')
 
@@ -80,6 +69,18 @@ export default class PacMan {
     this.gameBoard = boardElement
 
     this.container.appendChild(boardElement)
+  }
+
+  composeBoard() {
+    this.gameBoardArray = JSON.parse(JSON.stringify(this.initialGameBoardArray))
+
+    this.gameBoardArray[this.pacManPosition.y][this.pacManPosition.x] = PACMAN
+
+    this.ghostPositions.forEach(
+      ghostPosition => {
+        this.gameBoardArray[ghostPosition.y][ghostPosition.x] = GHOST
+      }
+    )
   }
 
   render() {
@@ -164,6 +165,8 @@ export default class PacMan {
   }
 
   tryToMovePacMan(y, x) {
+    if (this.isGameEnded) return
+
     const newPosition = {
       x: this.pacManPosition.x + x,
       y: this.pacManPosition.y + y,
@@ -173,6 +176,7 @@ export default class PacMan {
 
     switch (whatToDo) {
       case 'ENDGAME':
+        this.movePacMan(newPosition)
         this.endGame()
         break
       case 'MOVE':
@@ -186,8 +190,6 @@ export default class PacMan {
       case 'DONTMOVE':
         break
     }
-
-    this.render()
   }
 
   tryToMoveGhosts() {
@@ -197,6 +199,8 @@ export default class PacMan {
   }
 
   tryToMoveGhost(indexOfGhost) {
+    if (this.isGameEnded) return
+
     const currentGhostPosition = this.ghostPositions[indexOfGhost]
 
     const newPosition = {
@@ -208,6 +212,7 @@ export default class PacMan {
 
     switch (whatToDo) {
       case 'ENDGAME':
+        this.moveGhost(indexOfGhost, newPosition)
         this.endGame()
         break
       case 'MOVE':
@@ -218,14 +223,6 @@ export default class PacMan {
       case 'DONTMOVE':
         break
     }
-
-    this.render()
-  }
-
-  endGame() {
-    clearInterval(this.gameIntervalId)
-    alert('GAME OVER! \n YOUT SCORE - ' + this.score + ' !!!')
-    window.location = ''
   }
 
   movePacMan(newPosition) {
@@ -242,6 +239,11 @@ export default class PacMan {
 
   scoreUp() {
     this.score += 1
+  }
+
+  endGame() {
+    this.isGameEnded = true
+    clearInterval(this.gameIntervalId)
   }
 
   setGameInterval() {
@@ -268,6 +270,8 @@ export default class PacMan {
     }
 
     this.tryToMoveGhosts()
+
+    this.render()
   }
 
   startListeningArrowKeys() {
