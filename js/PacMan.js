@@ -56,7 +56,7 @@ export default class PacMan {
 
     this.setGameInterval()
   }
-  
+
   makeGameBoard() {
     const boardElement = document.createElement('div')
 
@@ -165,80 +165,31 @@ export default class PacMan {
   }
 
   tryToMovePacMan(y, x) {
-    if (this.isGameEnded) return
-
-    const newPosition = {
-      x: this.pacManPosition.x + x,
-      y: this.pacManPosition.y + y,
-    }
-
-    const whatToDo = this.checkWhatMoveDoForPacMan(newPosition)
-
-    switch (whatToDo) {
-      case 'ENDGAME':
-        this.movePacMan(newPosition)
-        this.endGame()
-        break
-      case 'MOVE':
-        this.movePacMan(newPosition)
-        break
-      case 'MOVEANDSCORE':
-        this.movePacMan(newPosition)
-        this.eatFood(newPosition)
-        this.scoreUp()
-        break
-      case 'DONTMOVE':
-        break
-    }
+    // @TODO
   }
 
   tryToMoveGhosts() {
-    this.ghostPositions.forEach(
-      (ghost, indexOfGhost) => this.tryToMoveGhost(indexOfGhost)
-    )
+    // @TODO
   }
 
   tryToMoveGhost(indexOfGhost) {
-    if (this.isGameEnded) return
-
-    const currentGhostPosition = this.ghostPositions[indexOfGhost]
-
-    const newPosition = {
-      x: currentGhostPosition.x + getRandomInt(-1, 1),
-      y: currentGhostPosition.y + getRandomInt(-1, 1),
-    }
-
-    const whatToDo = this.checkWhatMoveDoForGhost(newPosition)
-
-    switch (whatToDo) {
-      case 'ENDGAME':
-        this.moveGhost(indexOfGhost, newPosition)
-        this.endGame()
-        break
-      case 'MOVE':
-        this.moveGhost(indexOfGhost, newPosition)
-        break
-      case 'MOVEANDSCORE':
-        break
-      case 'DONTMOVE':
-        break
-    }
+    // @TODO
   }
 
   movePacMan(newPosition) {
-    this.pacManPosition = newPosition
+    // @TODO
   }
 
   moveGhost(indexOfGhost, newPosition) {
-    this.ghostPositions[indexOfGhost] = newPosition
+    // @TODO
   }
 
   eatFood(newPosition) {
-    this.initialGameBoardArray[newPosition.y][newPosition.x] = EMPTY
+    // @TODO
   }
 
   scoreUp() {
-    this.score += 1
+    // @TODO
   }
 
   endGame() {
@@ -256,20 +207,20 @@ export default class PacMan {
   gameTick() {
     switch (this.direction) {
       case 'up':
-        this.tryToMovePacMan(-1, 0)
+        // @TODO
         break
       case 'down':
-        this.tryToMovePacMan(1, 0)
+        // @TODO
         break
       case 'left':
-        this.tryToMovePacMan(0, -1)
+        // @TODO
         break
       case 'right':
-        this.tryToMovePacMan(0, 1)
+        // @TODO
         break
     }
 
-    this.tryToMoveGhosts()
+    // @TODO
 
     this.render()
   }
