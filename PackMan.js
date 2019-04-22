@@ -17,11 +17,11 @@ export default class PackMan {
 
     this.packManPosition = { x: 1, y: 1 }
     this.ghostPositions = [
-      { x: 2, y: 2 },
+      { x: 1, y: 2 },
       { x: 3, y: 3 },
     ]
 
-    this.gameBoardArray = board
+    this.gameBoardArray = []
     this.gameBoard = null
     this.gameIntervalId = null
     this.direction = 'up'
@@ -32,24 +32,23 @@ export default class PackMan {
 
   init() {
     this.makeGameBoard()
-    // this.placePackMan()
-    this.render()
     this.startListeningArrowKeys()
-    // this.setGameInterval()
+
+    this.render()
+
+    this.setGameInterval()
   }
 
   composeBoard() {
-    const boardArrayToRender = JSON.parse(JSON.stringify(this.gameBoardArray))
+    this.gameBoardArray = JSON.parse(JSON.stringify(board))
 
-    boardArrayToRender[this.packManPosition.y][this.packManPosition.x] = PACKMAN
+    this.gameBoardArray[this.packManPosition.y][this.packManPosition.x] = PACKMAN
 
     this.ghostPositions.forEach(
       ghostPosition => {
-        boardArrayToRender[ghostPosition.y][ghostPosition.x] = GHOST
+        this.gameBoardArray[ghostPosition.y][ghostPosition.x] = GHOST
       }
     )
-
-    return boardArrayToRender
   }
 
   makeGameBoard() {
@@ -69,7 +68,9 @@ export default class PackMan {
   render() {
     this.gameBoard.innerHTML = ''
 
-    this.composeBoard().forEach(row => {
+    this.composeBoard()
+
+    this.gameBoardArray.forEach(row => {
       row.forEach(cell => {
         this.renderSingleCell(cell)
       })
@@ -102,22 +103,102 @@ export default class PackMan {
     this.gameBoard.appendChild(cellElement)
   }
 
-  // gameTick() {
-  //   switch (this.direction) {
-  //     case 'up':
-  //       this.checkIfMoveIsAvailable(-1, 0)
-  //       break
-  //     case 'down':
-  //       this.checkIfMoveIsAvailable(1, 0)
-  //       break
-  //     case 'left':
-  //       this.checkIfMoveIsAvailable(0, -1)
-  //       break
-  //     case 'right':
-  //       this.checkIfMoveIsAvailable(0, 1)
-  //       break
-  //   }
-  // }
+  checkWhatMoveDo(endGame, move, moveAndScore, dontMove) {
+    return newPosition => {
+      if (
+        this.gameBoardArray[newPosition.y] === undefined ||
+        this.gameBoardArray[newPosition.y][newPosition.x] === undefined
+      ) {
+        return 'DONTMOVE'
+      }
+
+      const newPositionContent = this.gameBoardArray[newPosition.y][newPosition.x]
+
+      if (endGame.includes(newPositionContent)) {
+        return 'ENDGAME'
+      }
+      if (move.includes(newPositionContent)) {
+        return 'MOVE'
+      }
+      if (moveAndScore.includes(newPositionContent)) {
+        return 'MOVEANDSCORE'
+      }
+      if (dontMove.includes(newPositionContent)) {
+        return 'DONTMOVE'
+      }
+    }
+  }
+
+  checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
+    [GHOST],
+    [EMPTY],
+    [FOOD],
+    [WALL]
+  )
+
+  tryToMovePackMan(y, x) {
+    const newPosition = {
+      x: this.packManPosition.x + x,
+      y: this.packManPosition.y + y,
+    }
+
+    const whatToDo = this.checkWhatMoveDoForPackMan(newPosition)
+
+    switch (whatToDo) {
+      case 'ENDGAME':
+        this.endGame()
+        break
+      case 'MOVE':
+        this.movePackMan(newPosition)
+        break
+      case 'MOVEANDSCORE':
+        this.movePackMan(newPosition)
+        this.scoreUp()
+        break
+      case 'DONTMOVE':
+        break
+    }
+
+    this.render()
+  }
+
+  endGame() {
+    clearInterval(this.gameIntervalId)
+    alert('GAME OVER! \n YOUT SCORE - ' + this.score + ' !!!')
+    window.location = ''
+  }
+
+  movePackMan(newPosition) {
+    this.packManPosition = newPosition
+  }
+
+  scoreUp() {
+    this.score += 1
+  }
+
+  setGameInterval() {
+    this.gameIntervalId = setInterval(
+      () => this.gameTick(),
+      this.timeOfTick
+    )
+  }
+
+  gameTick() {
+    switch (this.direction) {
+      case 'up':
+        this.tryToMovePackMan(-1, 0)
+        break
+      case 'down':
+        this.tryToMovePackMan(1, 0)
+        break
+      case 'left':
+        this.tryToMovePackMan(0, -1)
+        break
+      case 'right':
+        this.tryToMovePackMan(0, 1)
+        break
+    }
+  }
 
   startListeningArrowKeys() {
     window.addEventListener(
