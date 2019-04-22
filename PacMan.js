@@ -1,13 +1,13 @@
-import { board, ghostPositions, packManPosition } from './PackMan.board.js'
-import { getRandomInt } from './PackMan.utils.js'
+import { board, ghostPositions, pacManPosition } from './PacMan.board.js'
+import { getRandomInt } from './PacMan.utils.js'
 
 const WALL = 0
 const EMPTY = 1
 const FOOD = 2
-const PACKMAN = 3
+const PACMAN = 3
 const GHOST = 4
 
-export default class PackMan {
+export default class PacMan {
   constructor(selector, boardDimension) {
     // HTML containers and game settings
     this.container = selector ? document.querySelector(selector) : document.body
@@ -24,20 +24,20 @@ export default class PackMan {
     this.score = 0
     
     // game variables that depends of level
-    this.packManPosition = JSON.parse(JSON.stringify(packManPosition))
+    this.pacManPosition = JSON.parse(JSON.stringify(pacManPosition))
     this.ghostPositions = JSON.parse(JSON.stringify(ghostPositions))
     this.initialGameBoardArray = JSON.parse(JSON.stringify(board))
     this.cellDimension = (100 / this.initialGameBoardArray.length) + '%'
 
     // bind interactions with moves
-    this.checkWhatMoveDoForPackMan = this.checkWhatMoveDo(
+    this.checkWhatMoveDoForPacMan = this.checkWhatMoveDo(
       [GHOST], // stepping on ghost ends game
-      [EMPTY], // stepping on empty moves packman
-      [FOOD], // stepping on food moves packman and score
+      [EMPTY], // stepping on empty moves pacman
+      [FOOD], // stepping on food moves pacman and score
       [WALL] // cant go on walls
     )
     this.checkWhatMoveDoForGhost = this.checkWhatMoveDo(
-      [PACKMAN], // stepping on packman ends game
+      [PACMAN], // stepping on pacman ends game
       [EMPTY, FOOD], // stepping on empty or food moves ghost
       [], // ghost cant score
       [WALL, GHOST] // ghosts cant go on other ghosts and walls
@@ -59,7 +59,7 @@ export default class PackMan {
   composeBoard() {
     this.gameBoardArray = JSON.parse(JSON.stringify(this.initialGameBoardArray))
 
-    this.gameBoardArray[this.packManPosition.y][this.packManPosition.x] = PACKMAN
+    this.gameBoardArray[this.pacManPosition.y][this.pacManPosition.x] = PACMAN
 
     this.ghostPositions.forEach(
       ghostPosition => {
@@ -121,7 +121,7 @@ export default class PackMan {
       case FOOD:
         cellElement.style.backgroundColor = 'green'
         break
-      case PACKMAN:
+      case PACMAN:
         cellElement.style.backgroundColor = 'yellow'
         break
       case GHOST:
@@ -158,23 +158,23 @@ export default class PackMan {
     }
   }
 
-  tryToMovePackMan(y, x) {
+  tryToMovePacMan(y, x) {
     const newPosition = {
-      x: this.packManPosition.x + x,
-      y: this.packManPosition.y + y,
+      x: this.pacManPosition.x + x,
+      y: this.pacManPosition.y + y,
     }
 
-    const whatToDo = this.checkWhatMoveDoForPackMan(newPosition)
+    const whatToDo = this.checkWhatMoveDoForPacMan(newPosition)
 
     switch (whatToDo) {
       case 'ENDGAME':
         this.endGame()
         break
       case 'MOVE':
-        this.movePackMan(newPosition)
+        this.movePacMan(newPosition)
         break
       case 'MOVEANDSCORE':
-        this.movePackMan(newPosition)
+        this.movePacMan(newPosition)
         this.eatFood(newPosition)
         this.scoreUp()
         break
@@ -223,8 +223,8 @@ export default class PackMan {
     window.location = ''
   }
 
-  movePackMan(newPosition) {
-    this.packManPosition = newPosition
+  movePacMan(newPosition) {
+    this.pacManPosition = newPosition
   }
 
   moveGhost(indexOfGhost, newPosition) {
@@ -249,16 +249,16 @@ export default class PackMan {
   gameTick() {
     switch (this.direction) {
       case 'up':
-        this.tryToMovePackMan(-1, 0)
+        this.tryToMovePacMan(-1, 0)
         break
       case 'down':
-        this.tryToMovePackMan(1, 0)
+        this.tryToMovePacMan(1, 0)
         break
       case 'left':
-        this.tryToMovePackMan(0, -1)
+        this.tryToMovePacMan(0, -1)
         break
       case 'right':
-        this.tryToMovePackMan(0, 1)
+        this.tryToMovePacMan(0, 1)
         break
     }
 

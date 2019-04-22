@@ -17,7 +17,7 @@ export const board = (
   ]
 )
 
-export const packManPosition = { x: 1, y: 1 }
+export const pacManPosition = { x: 1, y: 1 }
 
 export const ghostPositions = [
   { x: 1, y: 2 },
