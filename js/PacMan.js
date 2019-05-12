@@ -20,6 +20,7 @@ export default class PacMan {
     // game variables that DONT depends of level
     this.gameIntervalId = null
     this.gameBoardArray = []
+    this.eatenFood = []
     this.direction = 'up'
     this.isGameEnded = false
     this.score = 0
@@ -37,12 +38,14 @@ export default class PacMan {
       [FOOD], // stepping on food moves pacman and score
       [WALL] // cant go on walls
     )
+
     this.checkWhatMoveDoForGhost = this.checkWhatMoveDo(
       [PACMAN], // stepping on pacman ends game
       [EMPTY, FOOD], // stepping on empty or food moves ghost
       [], // ghost cant score
       [WALL, GHOST] // ghosts cant go on other ghosts and walls
     )
+
 
     // functions to start game
     this.init()
@@ -73,6 +76,12 @@ export default class PacMan {
 
   composeBoard() {
     this.gameBoardArray = JSON.parse(JSON.stringify(this.initialGameBoardArray))
+
+    this.eatenFood.forEach(
+      eatenFoodPosition => {
+        this.gameBoardArray[eatenFoodPosition.y][eatenFoodPosition.x] = EMPTY
+      }
+    )
 
     this.gameBoardArray[this.pacManPosition.y][this.pacManPosition.x] = PACMAN
 
@@ -119,19 +128,19 @@ export default class PacMan {
         break
       case EMPTY:
         cellElement.className = 'empty'
-        cellElement.style.backgroundColor = 'grey'
+        // cellElement.style.backgroundColor = 'grey'
         break
       case FOOD:
         cellElement.className = 'food'
-        cellElement.style.backgroundColor = 'green'
+        // cellElement.style.backgroundColor = 'green'
         break
       case PACMAN:
         cellElement.className = 'pacman ' + this.direction
-        cellElement.style.backgroundColor = 'yellow'
+        // cellElement.style.backgroundColor = 'yellow'
         break
       case GHOST:
         cellElement.className = 'ghost'
-        cellElement.style.backgroundColor = 'violet'
+        // cellElement.style.backgroundColor = 'violet'
         break
     }
 
@@ -165,36 +174,75 @@ export default class PacMan {
   }
 
   tryToMovePacMan(y, x) {
-    // @TODO
+    const coords = { x: x, y: y }
+    const newPosition = this.checkWhatMoveDoForPacMan(coords)
+    if (newPosition !== 'DONTMOVE') {
+      this.movePacMan(coords)
+    }
+    if (newPosition === 'MOVEANDSCORE') {
+      this.scoreUp()
+      this.eatFood(coords)
+    }
+    if (newPosition === 'ENDGAME') {
+      this.endGame()
+    }
   }
 
   tryToMoveGhosts() {
-    // @TODO
+    this.ghostPositions.forEach((elem, index) => {
+      this.tryToMoveGhost(index)
+    })
   }
 
   tryToMoveGhost(indexOfGhost) {
-    // @TODO
-  }
+    const ghost = this.ghostPositions[indexOfGhost]
+    const randomNum = getRandomInt(0, 3);
+    const newCoords = {};
+    if (randomNum === 0) {
+      newCoords.x = ghost.x + 1,
+      newCoords.y = ghost.y
+    } else if (randomNum === 1) {
+      newCoords.x = ghost.x - 1,
+      newCoords.y = ghost.y
+    } else if (randomNum === 2) {
+      newCoords.x = ghost.x,
+      newCoords.y = ghost.y + 1
+    } else if (randomNum === 3) {
+      newCoords.x = ghost.x,
+      newCoords.y = ghost.y - 1
+    }
 
-  movePacMan(newPosition) {
-    // @TODO
+    const newPosition = this.checkWhatMoveDoForGhost(newCoords)
+    console.log(newPosition)
+    if (newPosition === 'MOVE') {
+      this.moveGhost(indexOfGhost, newCoords)
+    }
+    if (newPosition === 'ENDGAME') {
+      this.moveGhost(indexOfGhost, newCoords)
+      this.endGame()
+    }
   }
 
   moveGhost(indexOfGhost, newPosition) {
-    // @TODO
+    this.ghostPositions[indexOfGhost] = newPosition
+  }
+
+  movePacMan(newPosition) {
+    this.pacManPosition = newPosition
   }
 
   eatFood(newPosition) {
-    // @TODO
+    this.eatenFood.push(newPosition)
   }
 
   scoreUp() {
-    // @TODO
+    this.score++
   }
 
   endGame() {
     this.isGameEnded = true
     clearInterval(this.gameIntervalId)
+    alert('Game over. Try again!')
   }
 
   setGameInterval() {
@@ -205,22 +253,41 @@ export default class PacMan {
   }
 
   gameTick() {
+
     switch (this.direction) {
       case 'up':
-        // @TODO
+
+        this.tryToMovePacMan(
+          this.pacManPosition.y - 1,
+          this.pacManPosition.x,
+        )
+
         break
       case 'down':
-        // @TODO
+        this.tryToMovePacMan(
+          this.pacManPosition.y + 1,
+          this.pacManPosition.x,
+        )
+
         break
       case 'left':
-        // @TODO
+        this.tryToMovePacMan(
+          this.pacManPosition.y,
+          this.pacManPosition.x - 1,
+        )
+
         break
       case 'right':
-        // @TODO
+        this.tryToMovePacMan(
+          this.pacManPosition.y,
+          this.pacManPosition.x + 1,
+        )
+
         break
     }
 
     // @TODO
+    this.tryToMoveGhosts()
 
     this.render()
   }

@@ -13,6 +13,31 @@
       margin: 0;
       padding: 0;
     }
+    .wall {
+      background-image: url(./img/wall.svg);
+    }
+    .food {
+      background-image: url(./img/food.svg);
+      background-position: 50% 50%;
+      background-size: 30%;
+      background-repeat: no-repeat;
+    }
+    .ghost {
+      background-image: url(./img/ghost.svg);
+      background-size: cover;
+    }
+    .pacman {
+      background-image: url(./img/pacman.svg);
+    }
+    .up {
+      transform: rotate(-90deg);
+    }
+    .down {
+      transform: rotate(90deg);
+    }
+    .left {
+      transform: scaleX(-1)
+    }
   </style>
 
 </head>
@@ -23,7 +48,7 @@
   <script type="module">
     import PacMan from './js/PacMan.js'
 
-    const game = new PacMan('.container-1', 320)
+    const game = new PacMan('.container-1', 520)
 
     window.game = game
   </script>
